@@ -569,8 +569,8 @@ ${shots}`;
   if(instr.trim()&&prev&&prev.data) msg+=`\n\nVERSION PRÉCÉDENTE (à faire évoluer selon la consigne) :\n${JSON.stringify({fil_rouge:prev.data.fil_rouge,sequences:prev.data.sequences})}`;
   busy(true,['Je dérushe…','Je cherche le fil rouge…','Je coupe dans le gras…','Je cale les textes…','Je fais respirer le montage…']);
   try{
-    const r=await callClaude({max_tokens:16000,system:SYS_MONTAGE+'\n\nTu rends ton travail UNIQUEMENT via l’outil "montage". Sois économe : notes de montage courtes.',
-      tools:[MONTAGE_TOOL],tool_choice:{type:'tool',name:'montage'},messages:[{role:'user',content:msg}]});
+    const r=await callClaude({max_tokens:16000,system:SYS_MONTAGE+'\n\nOBLIGATOIRE : appelle l’outil "montage" une seule fois avec tout le montage, sans aucun texte avant ou après. Sois économe : notes de montage courtes.',
+      tools:[MONTAGE_TOOL],tool_choice:{type:'auto'},messages:[{role:'user',content:msg}]});
     const tu=r.content.find(b=>b.type==='tool_use'&&b.name==='montage');
     let data=tu&&tu.input&&Array.isArray(tu.input.sequences)&&tu.input.sequences.length?tu.input:null;
     const raw=data?'':(textOf(r)||JSON.stringify(tu?tu.input:r.content).slice(0,4000));
