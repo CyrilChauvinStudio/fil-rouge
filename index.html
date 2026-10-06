@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Fil Rouge">
+<meta name="theme-color" content="#EFE7D6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Fil Rouge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFE7D6; --card:#F8F3E8; --ink:#1C1A16; --muted:#7A6F5E; --line:#D6CAB1;
+  --rouge:#C2421B; --mustard:#D9A33A; --olive:#5E6B3A;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button,input,textarea,select{font:inherit;font-size:16px;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 140px}
+header.top{position:sticky;top:0;z-index:10;background:var(--paper);padding:12px 16px 10px;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--serif);font-weight:800;font-size:26px;letter-spacing:-.5px;line-height:1}
+.brand b{color:var(--rouge)}
+.sub{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.grow{flex:1;min-width:0}
+.iconbtn{background:none;border:2px solid var(--ink);border-radius:999px;width:38px;height:38px;display:grid;place-items:center;font-size:18px;flex:none}
+.thread{height:6px;margin:0 16px;background:repeating-linear-gradient(90deg,var(--rouge) 0 22px,transparent 22px 30px);opacity:.85}
+h1.ptitle{font-family:var(--serif);font-weight:800;font-size:22px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;padding:11px 18px;font-weight:600}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.red{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.btn.full{width:100%}
+.btn:disabled{opacity:.4}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.proj{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.proj .n{font-family:var(--serif);font-weight:800;font-size:19px}
+.meta{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.5px}
+.tabs{display:flex;border-bottom:2px solid var(--ink);position:sticky;top:64px;background:var(--paper);z-index:9;margin:0 -16px;padding:0 16px}
+.tab{flex:1;background:none;border:none;padding:12px 4px 10px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--ink);border-bottom-color:var(--rouge)}
+label.f{display:block;margin:12px 0 4px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+input.t,textarea.t,select.t{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
+input.t:focus,textarea.t:focus{border-color:var(--ink)}
+textarea.t{min-height:80px;resize:vertical}
+textarea.brief{min-height:320px;font-size:15px;line-height:1.5}
+.seg{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{flex:1;background:none;border:none;padding:8px 6px;font-size:14px}
+.seg button.on{background:var(--ink);color:var(--paper)}
+/* shots */
+.shot{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line)}
+.shot .num{font-family:var(--mono);font-size:12px;background:var(--ink);color:var(--paper);border-radius:6px;padding:3px 6px;flex:none;margin-top:2px}
+.shot .txt{flex:1;min-width:0}
+.shot .tags{font-family:var(--mono);font-size:10.5px;color:var(--olive);letter-spacing:.5px;text-transform:uppercase}
+.star{background:none;border:none;font-size:20px;line-height:1;padding:2px;color:var(--line)}
+.star.on{color:var(--mustard)}
+.del{background:none;border:none;color:var(--muted);font-size:18px;padding:2px 4px}
+.composer{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:2px solid var(--ink);padding:8px 12px calc(10px + env(safe-area-inset-bottom));z-index:20}
+.composer .in{max-width:720px;margin:0 auto}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:4px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+.chip.on{background:var(--olive);border-color:var(--olive);color:#fff}
+.composer .line{display:flex;gap:8px;align-items:center}
+.composer input{flex:1;min-width:0}
+.add{width:46px;height:46px;border-radius:999px;border:none;background:var(--rouge);color:#fff;font-size:26px;flex:none;line-height:1}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.empty .big{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:6px}
+/* montage */
+.mhead{border:2px solid var(--ink);border-radius:14px;padding:14px;margin:14px 0;background:var(--card)}
+.mhead .title{font-family:var(--serif);font-weight:800;font-size:22px;line-height:1.15}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--rouge);margin:10px 0 2px}
+.seq{margin:18px 0}
+.seq h3{font-family:var(--serif);font-size:19px;margin:0;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.seq h3 span{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500}
+.seq .int{color:var(--muted);font-size:14px;margin:2px 0 6px}
+.pl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.ref{font-family:var(--mono);font-size:12px;background:var(--ink);color:var(--paper);border-radius:6px;padding:3px 6px;height:fit-content;white-space:nowrap}
+.ref.new{background:var(--rouge)}
+.pl .d{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.ecran{display:inline-block;margin-top:5px;background:var(--ink);color:var(--paper);font-family:var(--serif);font-weight:600;padding:4px 9px;border-radius:4px;font-size:15px}
+.vo{margin-top:5px;font-style:italic;border-left:3px solid var(--rouge);padding-left:8px}
+.son{font-family:var(--mono);font-size:11px;color:var(--olive);margin-top:4px}
+ul.lst{padding-left:18px;margin:6px 0}
+ul.lst li{margin:5px 0}
+.todo{border:2px dashed var(--rouge);border-radius:14px;padding:12px 14px;margin:12px 0}
+.todo .kicker{margin-top:0}
+.src a{color:var(--ink);font-size:13px;word-break:break-word}
+.sticky-actions{display:flex;gap:8px;margin:14px 0}
+.sticky-actions .btn{flex:1;padding:11px 8px}
+/* overlay */
+.ov{position:fixed;inset:0;background:rgba(28,26,22,.86);z-index:50;display:none;align-items:center;justify-content:center;color:var(--paper);text-align:center;padding:30px}
+.ov.on{display:flex}
+.reel{width:64px;height:64px;border:6px solid var(--paper);border-top-color:var(--rouge);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 18px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ov .msg{font-family:var(--serif);font-size:20px}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:14px;z-index:60;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(28,26,22,.5);display:none;align-items:flex-end}
+.sheet.on{display:flex}
+.sheet .box{background:var(--paper);width:100%;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom));border-top:2px solid var(--ink)}
+.sheet h2{font-family:var(--serif);margin:0 0 6px}
+.hint{font-size:13px;color:var(--muted)}
+.cam{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:1px;background:var(--mustard);color:var(--ink);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:1px}
+.camseg{display:flex;gap:4px;flex:none}
+.camseg button{border:1.5px solid var(--ink);background:none;border-radius:8px;width:34px;height:34px;font-family:var(--mono);font-size:13px}
+.camseg button.on{background:var(--mustard);border-color:var(--mustard)}
+.mv{display:flex;gap:6px;margin-top:8px}
+.mv button{border:1.5px solid var(--ink);background:none;border-radius:8px;min-width:40px;height:34px;font-size:15px}
+.mv button.x{border-color:var(--rouge);color:var(--rouge)}
+.addpl{width:100%;border:1.5px dashed var(--ink);background:none;border-radius:10px;padding:9px;margin-top:8px;font-family:var(--mono);font-size:12px;letter-spacing:1px}
+.pick{display:block;width:100%;text-align:left;border:none;border-bottom:1px dashed var(--line);background:none;padding:10px 0}
+#print{display:none}
+@media print{
+  body.printing #app,body.printing .composer,body.printing .toast,body.printing .ov,body.printing .sheet{display:none!important}
+  body.printing{background:#fff;padding:0}
+  body.printing #print{display:block;color:#000;font-family:var(--sans);font-size:9.5pt}
+  @page{size:A4;margin:12mm}
+  #print h1{font-family:var(--serif);font-size:20pt;margin:0}
+  #print .pm{font-family:var(--mono);font-size:8pt;color:#555;margin:2px 0 8px}
+  #print .bar{height:3px;background:repeating-linear-gradient(90deg,#C2421B 0 14px,transparent 14px 19px);margin:6px 0 10px}
+  #print .k{font-family:var(--mono);font-size:7.5pt;letter-spacing:1.5px;text-transform:uppercase;color:#C2421B;margin:8px 0 1px}
+  #print table{width:100%;border-collapse:collapse;margin-top:6px}
+  #print th{font-family:var(--mono);font-size:7pt;letter-spacing:1px;text-transform:uppercase;text-align:left;border-bottom:1.5px solid #000;padding:3px 4px}
+  #print td{vertical-align:top;border-bottom:.5pt solid #bbb;padding:4px}
+  #print tr.sq td{background:#EFE7D6;font-weight:700;font-family:var(--serif);font-size:10.5pt;border-bottom:1pt solid #000}
+  #print tr{page-break-inside:avoid}
+  #print .mono{font-family:var(--mono);font-size:8pt;white-space:nowrap}
+  #print .new{color:#C2421B;font-weight:700}
+  #print .ec{font-weight:700}
+  #print .vo{font-style:italic;border-left:2px solid #C2421B;padding-left:4px;margin:0}
+  #print ul{margin:3px 0;padding-left:14px}
+}
+details summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:6px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="ov" id="ov"><div><div class="reel"></div><div class="msg" id="ovmsg">…</div></div></div>
+<div class="toast" id="toast"></div>
+<div class="sheet" id="sheet"><div class="box" id="sheetbox"></div></div>
+<div id="print"></div>
+
+<script>
+/* ============ ÉTAT ============ */
+const KEY='filrouge_v1';
+const TAGS=['Large','Serré','Détail','Interview','Public','Scène','Coulisses','Ambiance','Lieu','Drone','Ralenti','Son direct'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const pad=n=>'P'+String(n).padStart(2,'0');
+
+function load(){
+  try{const r=localStorage.getItem(KEY); if(r) return JSON.parse(r);}catch(e){}
+  return {projects:[],settings:{key:'',model:'claude-sonnet-5-5'}};
+}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast('⚠️ Sauvegarde impossible');}}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+
+let V={name:'home'};           // vue courante
+let draftTags=[], draftStar=false, draftCam='A';
+const P=()=>S.projects.find(p=>p.id===V.id);
+const CAMS=['A','B','C'];
+const camsOf=p=>CAMS.slice(0,p.ncam||1);
+const multi=p=>(p.ncam||1)>1;
+const hhmm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+const secs=d=>{const m=String(d||'').match(/[\d]+(?:[.,]\d+)?/);return m?parseFloat(m[0].replace(',','.')):0;};
+const tc=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+
+/* ============ UI UTILES ============ */
+let tt;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2400);}
+let ovTimer;
+function busy(on,msgs){
+  const o=$('#ov');
+  if(!on){o.classList.remove('on');clearInterval(ovTimer);return;}
+  let i=0;$('#ovmsg').textContent=msgs[0];o.classList.add('on');
+  clearInterval(ovTimer);ovTimer=setInterval(()=>{i=(i+1)%msgs.length;$('#ovmsg').textContent=msgs[i];},2600);
+}
+function sheet(html){$('#sheetbox').innerHTML=html;$('#sheet').classList.add('on');}
+function closeSheet(){$('#sheet').classList.remove('on');}
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet();});
+function go(v){V=v;render();window.scrollTo(0,0);}
+
+/* ============ RENDU ============ */
+function render(){
+  const a=$('#app');
+  if(V.name==='home') a.innerHTML=homeHTML();
+  else if(V.name==='project'){ if(!P()){V={name:'home'};return render();} a.innerHTML=projectHTML(); }
+  if(V.name==='project'&&V.tab==='plans'){ const l=$('#shotlist'); if(l&&V.scrollEnd){window.scrollTo(0,document.body.scrollHeight);V.scrollEnd=false;} }
+}
+
+function homeHTML(){
+  const ps=[...S.projects].sort((a,b)=>b.updated-a.updated);
+  return `
+  <header class="top"><div class="grow"><div class="brand">FIL <b>ROUGE</b></div><div class="sub">Cyril Chauvin Studio · Montage événementiel</div></div>
+  <button class="iconbtn" onclick="openSettings()" aria-label="Réglages">⚙</button></header>
+  <div class="thread"></div>
+  <div class="wrap">
+    <div style="margin:18px 0"><button class="btn red full" onclick="newProject()">＋ Nouvel événement</button></div>
+    ${ps.length?ps.map(p=>`<button class="proj" onclick="go({name:'project',id:'${p.id}',tab:'plans'})">
+      <div class="n">${esc(p.name||'Sans titre')}</div>
+      <div class="meta">${esc([p.org,p.date,p.lieu].filter(Boolean).join(' · '))||'—'}</div>
+      <div class="meta" style="margin-top:4px">${p.shots.length} PLAN${p.shots.length>1?'S':''} · ${p.montages.length} MONTAGE${p.montages.length>1?'S':''}${p.brief&&p.brief.text?' · CONTEXTE ✓':''}</div>
+    </button>`).join(''):`<div class="empty"><div class="big">Aucun événement.</div>Crée-en un, puis note tes plans au fil du tournage.</div>`}
+  </div>`;
+}
+
+function projectHTML(){
+  const p=P(), t=V.tab;
+  return `
+  <header class="top"><button class="iconbtn" onclick="go({name:'home'})" aria-label="Retour">←</button>
+    <div class="grow"><h1 class="ptitle">${esc(p.name||'Sans titre')}</h1><div class="sub">${esc(p.org||'Organisateur ?')}</div></div>
+    <button class="iconbtn" onclick="projectMenu()" aria-label="Menu">⋯</button></header>
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab ${t==='plans'?'on':''}" onclick="setTab('plans')">Plans · ${p.shots.length}</button>
+      <button class="tab ${t==='contexte'?'on':''}" onclick="setTab('contexte')">Contexte${p.brief&&p.brief.text?' ✓':''}</button>
+      <button class="tab ${t==='montage'?'on':''}" onclick="setTab('montage')">Montage</button>
+    </div>
+    ${t==='plans'?plansHTML(p):t==='contexte'?contexteHTML(p):montageHTML(p)}
+  </div>
+  ${t==='plans'?composerHTML():''}`;
+}
+function setTab(t){V.tab=t;render();window.scrollTo(0,0);}
+
+/* ---- PLANS ---- */
+function plansHTML(p){
+  const m=activeMontage(p);
+  const todo=m&&m.data&&Array.isArray(m.data.plans_a_tourner)&&m.data.plans_a_tourner.length?`
+    <div class="todo"><div class="kicker">À tourner pour le montage</div>
+    <ul class="lst">${m.data.plans_a_tourner.map(x=>`<li><b>${esc(x.plan)}</b><br><span class="hint">${esc(x.pourquoi||'')}</span></li>`).join('')}</ul></div>`:'';
+  if(!p.shots.length) return todo+`<div class="empty"><div class="big">Le réservoir est vide.</div>Écris (ou dicte 🎙) chaque plan en bas de l'écran.<br>Exemple : <i>« Mains qui accrochent les badges, lumière du matin »</i><br>★ = pépite à placer en temps fort.</div>`;
+  return todo+`<div id="shotlist">${p.shots.map(s=>`
+    <div class="shot">
+      <span class="num">${pad(s.n)}</span>
+      <div class="txt" onclick="editShot('${s.id}')">${esc(s.text)}${s.tags.length?`<div class="tags">${s.tags.map(esc).join(' · ')}</div>`:''}<div class="meta">${hhmm(s.t)}${multi(p)?`<span class="cam">CAM ${esc(s.cam||'A')}</span>`:''}</div></div>
+      <button class="star ${s.star?'on':''}" onclick="toggleStar('${s.id}')" aria-label="Pépite">★</button>
+      <button class="del" onclick="delShot('${s.id}')" aria-label="Supprimer">✕</button>
+    </div>`).join('')}</div>`;
+}
+function composerHTML(){
+  const p=P(); if(!camsOf(p).includes(draftCam)) draftCam='A';
+  return `<div class="composer"><div class="in">
+    <div class="chips">${TAGS.map(t=>`<button class="chip ${draftTags.includes(t)?'on':''}" onclick="toggleTag('${t}')">${t}</button>`).join('')}</div>
+    <div class="line">
+      ${multi(p)?`<div class="camseg">${camsOf(p).map(c=>`<button class="${draftCam===c?'on':''}" onclick="setCam('${c}')">${c}</button>`).join('')}</div>`:''}
+      <button class="star ${draftStar?'on':''}" style="font-size:26px" onclick="const v=$('#shotin').value;draftStar=!draftStar;render();$('#shotin').value=v" aria-label="Pépite">★</button>
+      <input class="t" id="shotin" placeholder="Décris le plan…" enterkeyhint="send" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addShot()}">
+      <button class="add" onclick="addShot()" aria-label="Ajouter">＋</button>
+    </div></div></div>`;
+}
+function toggleTag(t){const v=$('#shotin').value;draftTags=draftTags.includes(t)?draftTags.filter(x=>x!==t):[...draftTags,t];render();const i=$('#shotin');i.value=v;}
+function setCam(c){const v=$('#shotin').value;draftCam=c;render();$('#shotin').value=v;}
+function addShot(){
+  const i=$('#shotin'),txt=i.value.trim(); if(!txt&&!draftTags.length) return;
+  const p=P(); p.nextN=(p.nextN||p.shots.length)+1;
+  p.shots.push({id:uid(),n:p.nextN,text:txt||'(sans description)',tags:[...draftTags],star:draftStar,cam:multi(p)?draftCam:'A',t:Date.now()});
+  p.updated=Date.now(); save(); draftTags=[]; draftStar=false; V.scrollEnd=true; render();
+  setTimeout(()=>{const x=$('#shotin'); x&&x.focus();},50);
+}
+function toggleStar(id){const s=P().shots.find(x=>x.id===id);s.star=!s.star;save();render();}
+function delShot(id){const s=P().shots.find(x=>x.id===id);if(!confirm(`Supprimer ${pad(s.n)} ?`))return;P().shots=P().shots.filter(x=>x.id!==id);save();render();}
+function editShot(id){
+  const s=P().shots.find(x=>x.id===id);
+  sheet(`<h2>${pad(s.n)}</h2>
+   <label class="f">Description</label><textarea class="t" id="es">${esc(s.text)}</textarea>
+   <label class="f">Étiquettes</label><div class="row">${TAGS.map(t=>`<button class="chip ${s.tags.includes(t)?'on':''}" onclick="this.classList.toggle('on')" data-t="${t}">${t}</button>`).join('')}</div>
+   ${multi(P())?`<label class="f">Caméra</label><div class="camseg" id="ecam">${camsOf(P()).map(c=>`<button class="${(s.cam||'A')===c?'on':''}" data-c="${c}" onclick="[...this.parentNode.children].forEach(b=>b.classList.remove('on'));this.classList.add('on')">${c}</button>`).join('')}</div>`:''}
+   <div class="sticky-actions"><button class="btn alt" onclick="closeSheet()">Annuler</button><button class="btn" onclick="saveShot('${id}')">Enregistrer</button></div>`);
+}
+function saveShot(id){const s=P().shots.find(x=>x.id===id);s.text=$('#es').value.trim()||s.text;const c=document.querySelector('#ecam button.on');if(c)s.cam=c.dataset.c;s.tags=[...document.querySelectorAll('#sheetbox .chip.on')].map(b=>b.dataset.t);P().updated=Date.now();save();closeSheet();render();}
+
+/* ---- CONTEXTE ---- */
+function contexteHTML(p){
+  const f=(k,l,ph,type='text')=>`<label class="f">${l}</label><input class="t" type="${type}" value="${esc(p[k]||'')}" placeholder="${esc(ph)}" onchange="setField('${k}',this.value)">`;
+  return `
+  ${f('name','Événement','Ex : Convention annuelle 2026')}
+  ${f('org','Organisateur / structure','Ex : CCI Nice Côte d’Azur')}
+  <div class="row" style="gap:10px"><div class="grow">${f('date','Date','12 oct. 2026')}</div><div class="grow">${f('lieu','Lieu','Palais des Festivals')}</div></div>
+  ${f('url','Site web (facultatif)','https://…','url')}
+  <label class="f">Caméras sur le tournage</label>
+  <div class="seg">${[1,2,3].map(n=>`<button class="${(p.ncam||1)===n?'on':''}" onclick="P().ncam=${n};save();render()">${n===1?'1 caméra':n===2?'A + B':'A + B + C'}</button>`).join('')}</div>
+  <label class="f">Ce que le client attend du film</label>
+  <textarea class="t" placeholder="Ex : donner envie aux exposants de revenir, montrer l’ambiance business…" onchange="setField('angle',this.value)">${esc(p.angle||'')}</textarea>
+  <label class="f">Notes perso (infos glanées sur place)</label>
+  <textarea class="t" placeholder="Ex : 1 200 participants, le président parle de la réindustrialisation…" onchange="setField('notes',this.value)">${esc(p.notes||'')}</textarea>
+  <div style="margin:16px 0"><button class="btn red full" onclick="research()">🔎 ${p.brief&&p.brief.text?'Relancer la recherche web':'Rechercher sur le web'}</button>
+  <div class="hint" style="margin-top:6px">Claude cherche l’organisateur, l’édition, les chiffres, les angles narratifs. Tu peux corriger la fiche ensuite.</div></div>
+  ${p.brief&&p.brief.text?`
+    <label class="f">Fiche contexte (modifiable)</label>
+    <textarea class="t brief" onchange="P().brief.text=this.value;save()">${esc(p.brief.text)}</textarea>
+    ${p.brief.sources&&p.brief.sources.length?`<details class="src"><summary>Sources (${p.brief.sources.length})</summary><ul class="lst">${p.brief.sources.map(s=>`<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title||s.url)}</a></li>`).join('')}</ul></details>`:''}`:''}
+  `;
+}
+function setField(k,v){P()[k]=v.trim();P().updated=Date.now();save();if(k==='name'||k==='org'){const pt=document.querySelector('.ptitle');if(pt)pt.textContent=P().name||'Sans titre';}}
+
+/* ---- MONTAGE ---- */
+function activeMontage(p){return p.montages.find(m=>m.id===p.activeMontage)||p.montages[p.montages.length-1];}
+function montageHTML(p){
+  const o=p.opts||(p.opts={duree:'60',format:'16:9',textes:'ecran',ton:'Énergique'});
+  const seg=(k,vals)=>`<div class="seg">${vals.map(([v,l])=>`<button class="${o[k]===v?'on':''}" onclick="setOpt('${k}','${v}')">${l}</button>`).join('')}</div>`;
+  const m=activeMontage(p);
+  return `
+  <label class="f">Durée cible</label>${seg('duree',[['30','30 s'],['60','1 min'],['90','1 min 30'],['120','2 min'],['180','3 min']])}
+  <label class="f">Format</label>${seg('format',[['16:9','16:9'],['9:16','9:16'],['1:1','1:1']])}
+  <label class="f">Textes</label>${seg('textes',[['ecran','Écran'],['vo','Voix off'],['both','Les deux']])}
+  <label class="f">Ton</label>${seg('ton',[['Élégant','Élégant'],['Énergique','Énergique'],['Émotion','Émotion'],['Décalé','Décalé']])}
+  <label class="f">Consigne pour cette version (facultatif)</label>
+  <input class="t" id="instr" placeholder="Ex : ouvre sur les coulisses, plus de chiffres, suis le traiteur…">
+  <div style="margin:14px 0"><button class="btn red full" onclick="generate()" ${p.shots.length?'':'disabled'}>🎬 ${m?'Générer une nouvelle version':'Générer le montage'}</button>
+  ${!p.shots.length?'<div class="hint" style="margin-top:6px">Ajoute d’abord des plans.</div>':''}
+  ${!(p.brief&&p.brief.text)&&p.shots.length?'<div class="hint" style="margin-top:6px">Conseil : lance la recherche dans « Contexte » pour donner du fond aux textes.</div>':''}</div>
+  ${p.montages.length>1?`<label class="f">Versions</label><select class="t" onchange="P().activeMontage=this.value;save();render()">${p.montages.map((x,i)=>`<option value="${x.id}" ${m&&x.id===m.id?'selected':''}>V${i+1} · ${new Date(x.at).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${x.instruction?' · '+esc(x.instruction.slice(0,30)):''}</option>`).join('')}</select>`:''}
+  ${m?renderMontage(m,p):''}`;
+}
+function setOpt(k,v){P().opts[k]=v;save();render();}
+
+function renderMontage(m,p){
+  if(!m.data) return `<div class="card"><div class="kicker">Réponse brute</div><pre style="white-space:pre-wrap;font-size:13px">${esc(m.raw||'')}</pre></div>`;
+  const d=m.data, shotByRef=r=>p.shots.find(s=>pad(s.n)===String(r).trim().toUpperCase());
+  const isNew=r=>!shotByRef(r), R=!!V.reorder;
+  const total=(d.sequences||[]).reduce((a,s)=>a+(s.plans||[]).reduce((b,x)=>b+secs(x.duree),0),0);
+  return `
+  <div class="sticky-actions"><button class="btn" onclick="printMontage()">⎙ PDF</button><button class="btn" onclick="exportMontage()">⇪ Texte</button><button class="btn alt" onclick="copyMontage()">Copier</button></div>
+  <button class="btn ${R?'red':'alt'} full" onclick="V.reorder=!V.reorder;render()">${R?'✓ Terminer la réorganisation':'✎ Réorganiser à la main'}</button>
+  <div class="mhead">
+    <div class="title">${esc(d.titre||'Montage')}</div>
+    <div class="meta" style="margin-top:4px">≈ ${tc(total)} calculée · ${esc(m.opts?m.opts.format:'')}${m.edited?' · RETOUCHÉ À LA MAIN':''}</div>
+    <div class="kicker">Fil rouge</div><div>${esc(d.fil_rouge||'')}</div>
+    ${d.pourquoi?`<div class="kicker">Pourquoi ça sert l’événement</div><div>${esc(d.pourquoi)}</div>`:''}
+    ${d.musique?`<div class="kicker">Musique & rythme</div><div>${esc(d.musique)}</div>`:''}
+  </div>
+  ${(d.sequences||[]).map((s,i)=>`
+    <div class="seq"><h3>${i+1}. ${esc(s.nom)}<span>${esc(s.duree||'')}</span></h3>
+    ${s.intention?`<div class="int">${esc(s.intention)}</div>`:''}
+    ${(s.plans||[]).map((x,pi)=>{const sh=shotByRef(x.ref);return `<div class="pl">
+      <span class="ref ${isNew(x.ref)?'new':''}">${esc(sh?pad(sh.n):'À TOURNER')}</span>
+      <div><div>${esc(sh?sh.text:(x.description||x.ref))}${sh&&multi(p)?`<span class="cam">CAM ${esc(sh.cam||'A')}</span>`:''}</div>
+      <div class="d">${esc([x.duree,x.note].filter(Boolean).join(' · '))}</div>
+      ${x.texte_ecran?`<div class="ecran">${esc(x.texte_ecran)}</div>`:''}
+      ${x.voix_off?`<div class="vo">« ${esc(x.voix_off)} »</div>`:''}
+      ${x.son?`<div class="son">♪ ${esc(x.son)}</div>`:''}
+      ${R?`<div class="mv"><button onclick="movePlan(${i},${pi},-1)" aria-label="Monter">↑</button><button onclick="movePlan(${i},${pi},1)" aria-label="Descendre">↓</button><button onclick="editPlan(${i},${pi})" aria-label="Modifier">✎</button><button class="x" onclick="removePlan(${i},${pi})" aria-label="Retirer">✕</button></div>`:''}</div></div>`}).join('')}
+    ${R?`<button class="addpl" onclick="pickPlan(${i})">＋ AJOUTER UN PLAN ICI</button>`:''}
+    </div>`).join('')}
+  ${d.plans_a_tourner&&d.plans_a_tourner.length?`<div class="todo"><div class="kicker">Plans à tourner encore</div><ul class="lst">${d.plans_a_tourner.map(x=>`<li><b>${esc(x.plan)}</b><br><span class="hint">${esc(x.pourquoi||'')}</span></li>`).join('')}</ul></div>`:''}
+  ${d.textes_alternatifs&&d.textes_alternatifs.length?`<div class="card"><div class="kicker" style="margin-top:0">Textes de rechange</div><ul class="lst">${d.textes_alternatifs.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}
+  ${d.plans_ecartes&&d.plans_ecartes.length?`<details><summary>Plans écartés (${d.plans_ecartes.length})</summary><ul class="lst">${d.plans_ecartes.map(x=>`<li><b>${esc(x.ref)}</b> — ${esc(x.raison)}</li>`).join('')}</ul></details>`:''}
+  ${d.conseils_montage&&d.conseils_montage.length?`<div class="card"><div class="kicker" style="margin-top:0">Conseils de montage</div><ul class="lst">${d.conseils_montage.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}
+  <div class="row" style="margin-top:16px"><button class="btn alt" onclick="delMontage('${m.id}')">Supprimer cette version</button></div>`;
+}
+/* ---- RÉORGANISATION MANUELLE ---- */
+function touch(m){m.edited=true;P().updated=Date.now();save();const y=window.scrollY;render();window.scrollTo(0,y);}
+function movePlan(si,pi,dir){
+  const m=activeMontage(P()),seqs=m.data.sequences,s=seqs[si];const [x]=s.plans.splice(pi,1);
+  if(dir<0){ if(pi>0) s.plans.splice(pi-1,0,x); else if(si>0) seqs[si-1].plans.push(x); else s.plans.unshift(x); }
+  else { if(pi<s.plans.length) s.plans.splice(pi+1,0,x); else if(si<seqs.length-1) seqs[si+1].plans.unshift(x); else s.plans.push(x); }
+  touch(m);
+}
+function removePlan(si,pi){
+  const m=activeMontage(P()),d=m.data;const [x]=d.sequences[si].plans.splice(pi,1);
+  if(x.ref&&x.ref!=='À TOURNER'){(d.plans_ecartes=d.plans_ecartes||[]).push({ref:x.ref,raison:'retiré à la main'});}
+  touch(m);
+}
+function pickPlan(si){
+  const p=P(),m=activeMontage(p),used=new Set();(m.data.sequences||[]).forEach(s=>(s.plans||[]).forEach(x=>used.add(String(x.ref).toUpperCase())));
+  const list=[...p.shots].sort((a,b)=>used.has(pad(a.n))-used.has(pad(b.n))||a.n-b.n);
+  sheet(`<h2>Ajouter un plan</h2><div class="hint">Les plans pas encore utilisés sont en haut.</div>
+   ${list.map(s=>`<button class="pick" onclick="addPlanTo(${si},'${pad(s.n)}')"><span class="ref" style="display:inline-block;margin-right:8px">${pad(s.n)}</span>${s.star?'★ ':''}${esc(s.text)}${multi(p)?`<span class="cam">CAM ${esc(s.cam||'A')}</span>`:''}${used.has(pad(s.n))?' <span class="meta">· déjà utilisé</span>':''}</button>`).join('')}
+   <div class="sticky-actions"><button class="btn alt" onclick="closeSheet()">Fermer</button></div>`);
+}
+function addPlanTo(si,ref){
+  const m=activeMontage(P()),d=m.data;d.sequences[si].plans.push({ref,duree:'2 s',note:'',texte_ecran:'',voix_off:'',son:''});
+  d.plans_ecartes=(d.plans_ecartes||[]).filter(x=>String(x.ref).toUpperCase()!==ref);
+  closeSheet();touch(m);
+}
+function editPlan(si,pi){
+  const x=activeMontage(P()).data.sequences[si].plans[pi];
+  const fld=(k,l,ta)=>`<label class="f">${l}</label>${ta?`<textarea class="t" id="ep_${k}">${esc(x[k]||'')}</textarea>`:`<input class="t" id="ep_${k}" value="${esc(x[k]||'')}">`}`;
+  sheet(`<h2>${esc(x.ref)}</h2>${fld('duree','Durée (ex : 2 s)')}${fld('texte_ecran','Texte écran')}${fld('voix_off','Voix off',1)}${fld('note','Indication de montage')}${fld('son','Son')}
+   <div class="sticky-actions"><button class="btn alt" onclick="closeSheet()">Annuler</button><button class="btn" onclick="savePlan(${si},${pi})">Enregistrer</button></div>`);
+}
+function savePlan(si,pi){
+  const m=activeMontage(P()),x=m.data.sequences[si].plans[pi];
+  ['duree','texte_ecran','voix_off','note','son'].forEach(k=>x[k]=$('#ep_'+k).value.trim());
+  closeSheet();touch(m);
+}
+
+/* ---- PDF (conducteur de montage) ---- */
+function printMontage(){
+  const p=P(),m=activeMontage(p);if(!m||!m.data){toast('Rien à imprimer');return;}
+  const d=m.data,sh=r=>p.shots.find(s=>pad(s.n)===String(r).trim().toUpperCase()),mc=multi(p);
+  let t=0,n=0,rows='';
+  (d.sequences||[]).forEach((s,i)=>{
+    rows+=`<tr class="sq"><td colspan="${mc?7:6}">${i+1}. ${esc(s.nom||'')} <span class="mono" style="font-weight:400">${esc(s.intention||'')}</span></td></tr>`;
+    (s.plans||[]).forEach(x=>{const k=sh(x.ref);n++;
+      rows+=`<tr><td class="mono">${n}</td><td class="mono">${tc(t)}</td><td class="mono ${k?'':'new'}">${k?pad(k.n):'À TOURNER'}</td>${mc?`<td class="mono">${k?esc(k.cam||'A'):''}</td>`:''}
+      <td>${esc(k?k.text:(x.description||''))}${x.note?`<div style="color:#555;font-size:8pt">↳ ${esc(x.note)}</div>`:''}</td>
+      <td class="mono">${esc(x.duree||'')}</td>
+      <td>${x.texte_ecran?`<div class="ec">${esc(x.texte_ecran)}</div>`:''}${x.voix_off?`<p class="vo">« ${esc(x.voix_off)} »</p>`:''}${x.son?`<div class="mono" style="color:#5E6B3A">♪ ${esc(x.son)}</div>`:''}</td></tr>`;
+      t+=secs(x.duree);});
+  });
+  const li=(a,f)=>a&&a.length?`<ul>${a.map(f).join('')}</ul>`:'';
+  $('#print').innerHTML=`
+   <h1>${esc(d.titre||'Montage')}</h1>
+   <div class="pm">${esc([p.name,p.org,p.date,p.lieu].filter(Boolean).join(' · '))}<br>CONDUCTEUR DE MONTAGE · ≈ ${tc(t)} · ${esc(m.opts.format)} · TON ${esc(m.opts.ton).toUpperCase()} · V${p.montages.indexOf(m)+1}${m.edited?' (retouchée)':''} · ${new Date().toLocaleDateString('fr-FR')}</div>
+   <div class="bar"></div>
+   <div class="k">Fil rouge</div><div>${esc(d.fil_rouge||'')}</div>
+   ${d.pourquoi?`<div class="k">Pourquoi</div><div>${esc(d.pourquoi)}</div>`:''}
+   ${d.musique?`<div class="k">Musique & rythme</div><div>${esc(d.musique)}</div>`:''}
+   <table><thead><tr><th>#</th><th>TC</th><th>Plan</th>${mc?'<th>Cam</th>':''}<th>Description</th><th>Durée</th><th>Écran · VO · Son</th></tr></thead><tbody>${rows}</tbody></table>
+   ${d.plans_a_tourner&&d.plans_a_tourner.length?`<div class="k">Plans à tourner</div>${li(d.plans_a_tourner,x=>`<li><b>${esc(x.plan)}</b> — ${esc(x.pourquoi||'')}</li>`)}`:''}
+   ${d.textes_alternatifs&&d.textes_alternatifs.length?`<div class="k">Textes de rechange</div>${li(d.textes_alternatifs,x=>`<li>${esc(x)}</li>`)}`:''}
+   ${d.conseils_montage&&d.conseils_montage.length?`<div class="k">Conseils de montage</div>${li(d.conseils_montage,x=>`<li>${esc(x)}</li>`)}`:''}
+   ${d.plans_ecartes&&d.plans_ecartes.length?`<div class="k">Plans écartés</div>${li(d.plans_ecartes,x=>`<li>${esc(x.ref)} — ${esc(x.raison)}</li>`)}`:''}
+   ${p.brief&&p.brief.sources&&p.brief.sources.length?`<div class="k">Sources</div>${li(p.brief.sources,s=>`<li>${esc(s.title||'')} — ${esc(s.url)}</li>`)}`:''}
+   <div class="pm" style="margin-top:12px">Fil Rouge · Cyril Chauvin Studio</div>`;
+  document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),80);
+}
+function delMontage(id){if(!confirm('Supprimer cette version ?'))return;const p=P();p.montages=p.montages.filter(m=>m.id!==id);p.activeMontage=p.montages.length?p.montages[p.montages.length-1].id:null;save();render();}
+
+/* ============ PROJETS ============ */
+function newProject(){
+  const name=prompt('Nom de l’événement ?'); if(name===null) return;
+  const p={id:uid(),name:name.trim()||'Nouvel événement',org:'',date:'',lieu:'',url:'',angle:'',notes:'',shots:[],nextN:0,brief:null,montages:[],activeMontage:null,opts:{duree:'60',format:'16:9',textes:'ecran',ton:'Énergique'},created:Date.now(),updated:Date.now()};
+  S.projects.push(p);save();go({name:'project',id:p.id,tab:'contexte'});
+}
+function projectMenu(){
+  sheet(`<h2>${esc(P().name)}</h2>
+   <div style="display:grid;gap:10px;margin-top:12px">
+    <button class="btn" onclick="closeSheet();exportShots()">⇪ Exporter la liste des plans</button>
+    <button class="btn" onclick="closeSheet();printMontage()" ${activeMontage(P())?'':'disabled'}>⎙ Montage en PDF</button>
+    <button class="btn" onclick="closeSheet();exportMontage()" ${activeMontage(P())?'':'disabled'}>⇪ Montage en texte</button>
+    <button class="btn alt" onclick="dupProject()">Dupliquer l’événement</button>
+    <button class="btn alt" style="border-color:var(--rouge);color:var(--rouge)" onclick="delProject()">Supprimer l’événement</button>
+    <button class="btn alt" onclick="closeSheet()">Fermer</button></div>`);
+}
+function dupProject(){const c=JSON.parse(JSON.stringify(P()));c.id=uid();c.name+=' (copie)';c.updated=Date.now();S.projects.push(c);save();closeSheet();go({name:'project',id:c.id,tab:'plans'});}
+function delProject(){if(!confirm('Supprimer définitivement cet événement et ses plans ?'))return;S.projects=S.projects.filter(p=>p.id!==V.id);save();closeSheet();go({name:'home'});}
+
+/* ============ RÉGLAGES ============ */
+function openSettings(){
+  sheet(`<h2>Réglages</h2>
+   <label class="f">Clé API Anthropic</label>
+   <input class="t" id="k" type="password" value="${esc(S.settings.key)}" placeholder="sk-ant-…" autocomplete="off">
+   <div class="hint" style="margin-top:4px">Stockée uniquement sur ce téléphone. Sert à la recherche web et à la génération.</div>
+   <label class="f">Modèle</label>
+   <select class="t" id="mdl">
+     <option value="claude-sonnet-5-5" ${S.settings.model==='claude-sonnet-5-5'?'selected':''}>Claude Sonnet 5.5 — rapide, économique</option>
+     <option value="claude-opus-5-5" ${S.settings.model==='claude-opus-5-5'?'selected':''}>Claude Opus 5.5 — plus fin, plus lent</option>
+   </select>
+   <div class="sticky-actions"><button class="btn" onclick="S.settings.key=$('#k').value.trim();S.settings.model=$('#mdl').value;save();closeSheet();toast('Réglages enregistrés')">Enregistrer</button></div>
+   <label class="f">Sauvegarde</label>
+   <div class="row"><button class="btn alt" onclick="backup()">Exporter tout (.json)</button>
+   <label class="btn alt" style="display:inline-block">Importer<input type="file" accept=".json,application/json" style="display:none" onchange="restore(this.files[0])"></label></div>
+   <div class="hint" style="margin-top:6px">Exporte de temps en temps : si tu effaces les données de Safari, tout part avec.</div>`);
+}
+function backup(){const d=JSON.parse(JSON.stringify(S));d.settings.key='';shareFile(`filrouge-sauvegarde-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(d,null,1),'application/json');}
+function restore(f){if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!Array.isArray(d.projects))throw 0;const ids=new Set(S.projects.map(p=>p.id));let n=0;d.projects.forEach(p=>{if(!ids.has(p.id)){S.projects.push(p);n++;}});save();closeSheet();render();toast(n+' événement(s) importé(s)');}).catch(()=>toast('Fichier invalide'));}
+
+/* ============ CLAUDE ============ */
+async function callClaude(body){
+  if(!S.settings.key){openSettings();throw new Error('Ajoute ta clé API dans les réglages.');}
+  let messages=[...body.messages], out={content:[]};
+  for(let i=0;i<4;i++){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{
+      'content-type':'application/json','x-api-key':S.settings.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({...body,model:S.settings.model,messages})});
+    let j; try{j=await r.json();}catch(e){throw new Error('Réponse illisible ('+r.status+')');}
+    if(!r.ok) throw new Error(j&&j.error&&j.error.message||('Erreur '+r.status));
+    out.content.push(...j.content); out.stop_reason=j.stop_reason;
+    if(j.stop_reason!=='pause_turn') break;
+    messages=[...body.messages,{role:'assistant',content:out.content}];
+  }
+  return out;
+}
+const textOf=r=>r.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+function sourcesOf(r){const m=new Map();r.content.filter(b=>b.type==='web_search_tool_result'&&Array.isArray(b.content)).forEach(b=>b.content.forEach(x=>{if(x.url&&!m.has(x.url))m.set(x.url,{url:x.url,title:x.title});}));return [...m.values()].slice(0,15);}
+
+const SYS_RESEARCH=`Tu es documentaliste pour un réalisateur de films événementiels (Cyril Chauvin Studio). Avant le montage, il a besoin d'éléments ÉCLAIRANTS sur l'événement et la structure qui l'organise, pour donner du fond au film.
+Cherche sur le web, puis rédige une fiche en français, courte (350 mots max), avec exactement ces rubriques :
+## L'organisateur — mission, histoire, taille, ce qui le rend singulier (pas sa plaquette).
+## L'événement — édition, thème, intervenants, public, chiffres, enjeux de cette année.
+## Matière narrative — faits précis, chiffres marquants, anecdotes, contrastes, formules courtes exploitables à l'écran.
+## Pistes de fil rouge — 3 idées d'histoire possibles pour le film, une ligne chacune.
+## Pièges à éviter — sujets sensibles, infos non confirmées, clichés du secteur.
+Règles : factuel, jamais d'invention. Si une info n'est pas confirmée, écris « (non confirmé) ». Pas de langue de bois. Pas d'introduction ni de conclusion.`;
+
+async function research(){
+  const p=P();
+  if(!p.name&&!p.org){toast('Renseigne au moins l’événement ou l’organisateur');return;}
+  busy(true,['Je fouille le web…','Je lis le site de l’organisateur…','Je cherche les chiffres qui comptent…','Je repère les angles narratifs…']);
+  try{
+    const q=`Événement : ${p.name||'?'}\nOrganisateur : ${p.org||'?'}\nDate : ${p.date||'?'}\nLieu : ${p.lieu||'?'}\nSite : ${p.url||'—'}\nAttente du client : ${p.angle||'—'}\nNotes du réalisateur : ${p.notes||'—'}`;
+    const r=await callClaude({max_tokens:4000,system:SYS_RESEARCH,tools:[{type:'web_search_20250305',name:'web_search',max_uses:6}],messages:[{role:'user',content:q}]});
+    p.brief={text:textOf(r),sources:sourcesOf(r),at:Date.now()}; p.updated=Date.now(); save(); render(); toast('Fiche contexte prête');
+  }catch(e){toast(e.message);}finally{busy(false);}
+}
+
+const SYS_MONTAGE=`Tu es chef monteur et scénariste, spécialiste des films événementiels B2B, pour Cyril Chauvin Studio. Ta mission : transformer une liste de plans tournés en un montage qui RACONTE quelque chose — surtout pas un diaporama de jolies images. Le spectateur doit avoir envie de regarder jusqu'au bout.
+
+MÉTHODE
+1. Trouve UN fil rouge : une idée simple qui donne une raison de rester. Exemples : une question posée au début et résolue à la fin ; un personnage qu'on suit (un technicien, une exposante, le traiteur) ; un objet qui circule ; le contraste coulisses / scène ; un compte à rebours ; vide → plein ; un chiffre qui se remplit. Il doit servir l'événement ET son organisateur.
+2. Construis une courbe : accroche (les 3 premières secondes intriguent — jamais un logo, jamais un plan large d'établissement en ouverture), installation, montée, temps fort, chute / signature finale.
+3. Jamais l'ordre chronologique par défaut. Varie les valeurs de plan, crée des raccords (mouvement, regard, forme, son), place les plans marqués ★ (pépites) aux moments clés. Écarte les plans redondants.
+4. Respecte la durée cible : la somme des durées ≈ durée cible. Plans de 1 à 3 s, plus longs seulement pour une phrase d'interview ou un son.
+5. Textes : concrets, courts, qui apportent du FOND (faits, chiffres, enjeux tirés de la fiche contexte) et font avancer le fil rouge. Texte écran ≤ 8 mots. Voix off : phrases parlées, naturelles, ≤ 15 mots chacune. Pas de texte sur chaque plan : laisse respirer.
+   Interdits : clichés corporate (« l'humain au cœur », « une journée riche en échanges », « moments forts », « synergies », « depuis X nous accompagnons », « un grand merci à tous »), superlatifs vides, points d'exclamation en série.
+6. N'invente AUCUN fait. Utilise uniquement la fiche contexte, les notes et les plans. Si un chiffre serait utile mais manque, écris le texte avec [À VÉRIFIER].
+7. Pour "ref", utilise uniquement les numéros existants (P01, P02…). Si un plan manquant est indispensable, mets ref "À TOURNER" + "description", et liste-le dans plans_a_tourner : le cadreur est peut-être encore sur place, sois précis et faisable en 2 minutes.
+
+SORTIE : UNIQUEMENT un objet JSON valide, sans texte autour, sans balises de code :
+{
+ "titre": "titre de travail du film",
+ "fil_rouge": "l'idée narrative en 1-2 phrases",
+ "pourquoi": "en 1 phrase, ce que ce fil rouge apporte à l'organisateur",
+ "duree_totale": "ex. 1:02",
+ "musique": "rythme, énergie, évolution, BPM indicatif, moments de silence",
+ "sequences": [
+  {"nom": "Accroche", "intention": "ce que le spectateur doit ressentir", "duree": "0:00–0:05",
+   "plans": [
+    {"ref": "P03", "duree": "2 s", "note": "indication de montage : raccord, vitesse, cut sur le temps…", "texte_ecran": "", "voix_off": "", "son": "son direct ou effet, sinon vide"}
+   ]}
+ ],
+ "plans_a_tourner": [{"plan": "description précise", "pourquoi": "ce qu'il apporte au récit"}],
+ "plans_ecartes": [{"ref": "P05", "raison": "courte"}],
+ "textes_alternatifs": ["3 à 5 variantes de textes clés (accroche / chute)"],
+ "conseils_montage": ["2 à 4 conseils concrets pour l'étalonnage, le son, le rythme"]
+}`;
+
+async function generate(){
+  const p=P(), o=p.opts, instr=($('#instr')||{}).value||'';
+  const prev=activeMontage(p);
+  const textes={ecran:'Textes à l’écran uniquement (voix_off toujours vide).',vo:'Voix off uniquement (texte_ecran réservé au titre final éventuel).',both:'Mélange voix off et textes écran, sans doublon entre les deux.'}[o.textes];
+  const mc=multi(p);
+  const shots=p.shots.map(s=>`${pad(s.n)} (${hhmm(s.t)}${mc?' · Cam '+(s.cam||'A'):''})${s.star?' ★':''}${s.tags.length?' ['+s.tags.join(', ')+']':''} — ${s.text}`).join('\n');
+  const camNote=mc?`\nTOURNAGE À ${p.ncam} CAMÉRAS (${camsOf(p).join(', ')}). Des plans de caméras différentes notés à la même heure montrent souvent le même moment sous deux angles : exploite-les (raccord dans l'axe, champ / contrechamp, réaction du public pendant une prise de parole). Indique-le dans "note".`:'';
+  let msg=`ÉVÉNEMENT : ${p.name||'?'}
+ORGANISATEUR : ${p.org||'?'}
+DATE / LIEU : ${[p.date,p.lieu].filter(Boolean).join(' · ')||'?'}
+ATTENTE DU CLIENT : ${p.angle||'non précisée'}
+NOTES DU RÉALISATEUR : ${p.notes||'—'}
+
+FICHE CONTEXTE :
+${p.brief&&p.brief.text?p.brief.text:'(aucune recherche faite — reste prudent sur les faits)'}
+
+PARAMÈTRES : durée cible ${o.duree} s · format ${o.format} · ton ${o.ton} · ${textes}${camNote}
+
+PLANS TOURNÉS (${p.shots.length}) :
+${shots}`;
+  if(instr.trim()) msg+=`\n\nCONSIGNE POUR CETTE VERSION : ${instr.trim()}`;
+  if(instr.trim()&&prev&&prev.data) msg+=`\n\nVERSION PRÉCÉDENTE (à faire évoluer selon la consigne) :\n${JSON.stringify({fil_rouge:prev.data.fil_rouge,sequences:prev.data.sequences})}`;
+  busy(true,['Je dérushe…','Je cherche le fil rouge…','Je coupe dans le gras…','Je cale les textes…','Je fais respirer le montage…']);
+  try{
+    const r=await callClaude({max_tokens:8000,system:SYS_MONTAGE,messages:[{role:'user',content:msg}]});
+    const raw=textOf(r); let data=null;
+    try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');data=JSON.parse(raw.slice(a,b+1));}catch(e){}
+    const m={id:uid(),at:Date.now(),instruction:instr.trim(),opts:{...o},data,raw:data?'':raw};
+    p.montages.push(m);p.activeMontage=m.id;p.updated=Date.now();save();render();
+    toast(data?'Montage prêt':'Réponse non structurée — affichée brute');
+  }catch(e){toast(e.message);}finally{busy(false);}
+}
+
+/* ============ EXPORT ============ */
+function montageText(p,m){
+  const d=m.data, L=[];
+  if(!d) return m.raw||'';
+  const sh=r=>p.shots.find(s=>pad(s.n)===String(r).trim().toUpperCase());
+  L.push(`${(d.titre||'MONTAGE').toUpperCase()}`,`${p.name||''}${p.org?' — '+p.org:''}${p.date?' — '+p.date:''}`,`Durée : ${d.duree_totale||''} · Format : ${m.opts.format} · Ton : ${m.opts.ton}`,'');
+  L.push('FIL ROUGE',d.fil_rouge||'','');
+  if(d.pourquoi) L.push('POURQUOI',d.pourquoi,'');
+  if(d.musique) L.push('MUSIQUE & RYTHME',d.musique,'');
+  (d.sequences||[]).forEach((s,i)=>{
+    L.push(`— ${i+1}. ${(s.nom||'').toUpperCase()}  [${s.duree||''}]`);
+    if(s.intention) L.push(`   Intention : ${s.intention}`);
+    (s.plans||[]).forEach(x=>{const k=sh(x.ref);
+      L.push(`   ${k?pad(k.n):'À TOURNER'}${k&&multi(p)?' [Cam '+(k.cam||'A')+']':''}  (${x.duree||'?'})  ${k?k.text:(x.description||'')}`);
+      if(x.note) L.push(`        ↳ ${x.note}`);
+      if(x.texte_ecran) L.push(`        ÉCRAN : ${x.texte_ecran}`);
+      if(x.voix_off) L.push(`        VO : « ${x.voix_off} »`);
+      if(x.son) L.push(`        SON : ${x.son}`);
+    });
+    L.push('');
+  });
+  if(d.plans_a_tourner&&d.plans_a_tourner.length){L.push('PLANS À TOURNER');d.plans_a_tourner.forEach(x=>L.push(`  • ${x.plan} — ${x.pourquoi||''}`));L.push('');}
+  if(d.textes_alternatifs&&d.textes_alternatifs.length){L.push('TEXTES DE RECHANGE');d.textes_alternatifs.forEach(t=>L.push(`  • ${t}`));L.push('');}
+  if(d.plans_ecartes&&d.plans_ecartes.length){L.push('PLANS ÉCARTÉS');d.plans_ecartes.forEach(x=>L.push(`  • ${x.ref} — ${x.raison}`));L.push('');}
+  if(d.conseils_montage&&d.conseils_montage.length){L.push('CONSEILS DE MONTAGE');d.conseils_montage.forEach(t=>L.push(`  • ${t}`));L.push('');}
+  if(p.brief&&p.brief.sources&&p.brief.sources.length){L.push('SOURCES');p.brief.sources.forEach(s=>L.push(`  • ${s.title||''} ${s.url}`));L.push('');}
+  L.push('— Fil Rouge · Cyril Chauvin Studio');
+  return L.join('\n');
+}
+const slug=s=>(s||'evenement').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-|-$/g,'');
+async function shareFile(name,text,type='text/plain'){
+  const f=new File([text],name,{type});
+  try{ if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return;} }catch(e){if(e.name==='AbortError')return;}
+  try{ if(navigator.share){await navigator.share({title:name,text});return;} }catch(e){if(e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;a.click();
+}
+function exportMontage(){const p=P(),m=activeMontage(p);if(!m)return;const i=p.montages.indexOf(m)+1;shareFile(`montage-${slug(p.name)}-v${i}.txt`,montageText(p,m));}
+async function copyMontage(){const p=P(),m=activeMontage(p);try{await navigator.clipboard.writeText(montageText(p,m));toast('Copié');}catch(e){toast('Copie impossible');}}
+function exportShots(){const p=P();const t=[`PLANS — ${p.name}${p.org?' — '+p.org:''}`,'',...p.shots.map(s=>`${pad(s.n)}${s.star?' ★':''}  ${hhmm(s.t)}${multi(p)?'  Cam '+(s.cam||'A'):''}  ${s.text}${s.tags.length?'  ['+s.tags.join(', ')+']':''}`)].join('\n');shareFile(`plans-${slug(p.name)}.txt`,t);}
+
+/* ============ DÉMARRAGE ============ */
+render();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
