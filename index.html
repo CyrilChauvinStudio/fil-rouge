@@ -328,7 +328,9 @@ function montageHTML(p){
 function setOpt(k,v){P().opts[k]=v;save();render();}
 
 function renderMontage(m,p){
-  if(!m.data) return `<div class="card"><div class="kicker">Réponse brute</div><pre style="white-space:pre-wrap;font-size:13px">${esc(m.raw||'')}</pre></div>`;
+  if(!m.data){const d=tryParse(m.raw);if(d){m.data=d;m.raw='';save();}}
+  if(!m.data) return `<div class="todo"><div class="kicker">Version illisible</div><div>Cette version n’a pas pu être mise en forme (réponse coupée). Supprime-la et relance la génération.</div>
+    <div class="row" style="margin-top:10px"><button class="btn alt" onclick="delMontage('${m.id}')">Supprimer cette version</button></div></div>`;
   const d=m.data, shotByRef=r=>p.shots.find(s=>pad(s.n)===String(r).trim().toUpperCase());
   const isNew=r=>!shotByRef(r), R=!!V.reorder;
   const total=(d.sequences||[]).reduce((a,s)=>a+(s.plans||[]).reduce((b,x)=>b+secs(x.duree),0),0);
@@ -524,7 +526,7 @@ MÉTHODE
 6. N'invente AUCUN fait. Utilise uniquement la fiche contexte, les notes et les plans. Si un chiffre serait utile mais manque, écris le texte avec [À VÉRIFIER].
 7. Pour "ref", utilise uniquement les numéros existants (P01, P02…). Si un plan manquant est indispensable, mets ref "À TOURNER" + "description", et liste-le dans plans_a_tourner : le cadreur est peut-être encore sur place, sois précis et faisable en 2 minutes.
 
-SORTIE : UNIQUEMENT un objet JSON valide, sans texte autour, sans balises de code :
+SORTIE — structure attendue :
 {
  "titre": "titre de travail du film",
  "fil_rouge": "l'idée narrative en 1-2 phrases",
@@ -567,14 +569,35 @@ ${shots}`;
   if(instr.trim()&&prev&&prev.data) msg+=`\n\nVERSION PRÉCÉDENTE (à faire évoluer selon la consigne) :\n${JSON.stringify({fil_rouge:prev.data.fil_rouge,sequences:prev.data.sequences})}`;
   busy(true,['Je dérushe…','Je cherche le fil rouge…','Je coupe dans le gras…','Je cale les textes…','Je fais respirer le montage…']);
   try{
-    const r=await callClaude({max_tokens:8000,system:SYS_MONTAGE,messages:[{role:'user',content:msg}]});
-    const raw=textOf(r); let data=null;
-    try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');data=JSON.parse(raw.slice(a,b+1));}catch(e){}
-    const m={id:uid(),at:Date.now(),instruction:instr.trim(),opts:{...o},data,raw:data?'':raw};
+    const r=await callClaude({max_tokens:16000,system:SYS_MONTAGE+'\n\nTu rends ton travail UNIQUEMENT via l’outil "montage". Sois économe : notes de montage courtes.',
+      tools:[MONTAGE_TOOL],tool_choice:{type:'tool',name:'montage'},messages:[{role:'user',content:msg}]});
+    const tu=r.content.find(b=>b.type==='tool_use'&&b.name==='montage');
+    let data=tu&&tu.input&&Array.isArray(tu.input.sequences)&&tu.input.sequences.length?tu.input:null;
+    const raw=data?'':(textOf(r)||JSON.stringify(tu?tu.input:r.content).slice(0,4000));
+    if(!data) data=tryParse(raw);
+    if(!data){toast(r.stop_reason==='max_tokens'?'Réponse trop longue, coupée. Réessaie en durée plus courte.':'Montage illisible. Réessaie.');return;}
+    const m={id:uid(),at:Date.now(),instruction:instr.trim(),opts:{...o},data,raw:''};
     p.montages.push(m);p.activeMontage=m.id;p.updated=Date.now();save();render();
-    toast(data?'Montage prêt':'Réponse non structurée — affichée brute');
+    toast('Montage prêt');
+    setTimeout(()=>{const h=document.querySelector('.mhead');h&&h.scrollIntoView({behavior:'smooth',block:'start'});},120);
   }catch(e){toast(e.message);}finally{busy(false);}
 }
+function tryParse(raw){
+  if(!raw) return null;
+  try{let s=String(raw).replace(/```(?:json)?/g,'');const a=s.indexOf('{'),b=s.lastIndexOf('}');const d=JSON.parse(s.slice(a,b+1));return Array.isArray(d.sequences)?d:null;}catch(e){return null;}
+}
+const STR={type:'string'};
+const MONTAGE_TOOL={name:'montage',description:'Rend le montage proposé, structuré.',input_schema:{type:'object',
+  properties:{
+    titre:STR,fil_rouge:STR,pourquoi:STR,duree_totale:STR,musique:STR,
+    sequences:{type:'array',items:{type:'object',properties:{nom:STR,intention:STR,duree:STR,
+      plans:{type:'array',items:{type:'object',properties:{ref:STR,description:STR,duree:STR,note:STR,texte_ecran:STR,voix_off:STR,son:STR},required:['ref','duree']}}},
+      required:['nom','plans']}},
+    plans_a_tourner:{type:'array',items:{type:'object',properties:{plan:STR,pourquoi:STR},required:['plan']}},
+    plans_ecartes:{type:'array',items:{type:'object',properties:{ref:STR,raison:STR},required:['ref']}},
+    textes_alternatifs:{type:'array',items:STR},
+    conseils_montage:{type:'array',items:STR}
+  },required:['titre','fil_rouge','sequences']}};
 
 /* ============ EXPORT ============ */
 function montageText(p,m){
